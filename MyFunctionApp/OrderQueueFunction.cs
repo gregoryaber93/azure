@@ -104,10 +104,10 @@ namespace MyFunctionApp
 
                 messageObject = JsonSerializer.Deserialize<QueueMessage>(message, options);
 
-                if (messageObject.OrderId == 26)
-                {
-                    throw new Exception("TEST ERROR");
-                }
+                //if (messageObject.OrderId == 26)
+                //{
+                //    throw new Exception("TEST ERROR");
+                //}
             }
             catch (Exception ex)
             {
