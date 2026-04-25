@@ -157,7 +157,7 @@ namespace MyFunctionApp
             [ServiceBusTrigger("orders-sb", Connection = "ServiceBus:ConnectionString")] string message)
         {
             _logger.LogWarning($"SB MESSAGE: {message}");
-            throw new Exception("BOOM 💣");
+            //throw new Exception("BOOM 💣");
         }
 
         private static OrderMessage? TryDeserializeOrder(string message)
