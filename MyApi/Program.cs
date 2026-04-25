@@ -13,6 +13,9 @@ builder.Services.AddHttpClient();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+
 builder.Services.Configure<MyApi.Config.AzureFunctionsOptions>(builder.Configuration.GetSection("AzureFunctions"));
 
 builder.Services.AddDbContext<AppDbContext>(options =>
