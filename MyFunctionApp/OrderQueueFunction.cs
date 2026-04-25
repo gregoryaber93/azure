@@ -103,11 +103,17 @@ namespace MyFunctionApp
                 };
 
                 messageObject = JsonSerializer.Deserialize<QueueMessage>(message, options);
+
+                if (messageObject.OrderId == 26)
+                {
+                    throw new Exception("TEST ERROR");
+                }
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Processing failed");
                 _logger.LogError(ex, "Deserialization failed");
-                return;
+                throw;
             }
 
             if (messageObject is null)

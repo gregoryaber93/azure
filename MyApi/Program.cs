@@ -55,6 +55,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.Use(async (context, next) =>
+{
+    app.Logger.LogInformation("HTTP {Method} {Path}", context.Request.Method, context.Request.Path);
+    await next();
+    app.Logger.LogInformation("HTTP {Method} {Path} -> {StatusCode}", context.Request.Method, context.Request.Path, context.Response.StatusCode);
+});
+
 app.MapControllers();
 
 app.Run();
