@@ -36,6 +36,8 @@ namespace MyApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] string? productName)
         {
+            _logger.LogInformation("CI/CD TEST API");
+
             var orders = await _orderService.GetAll();
 
             if (!string.IsNullOrEmpty(productName))

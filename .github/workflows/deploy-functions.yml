@@ -1,0 +1,40 @@
+name: Deploy Functions
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'MyFunctionApp/**'
+      - '.github/workflows/deploy-functions.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production-functions
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore MyFunctionApp/MyFunctionApp.csproj
+
+      - name: Build
+        run: dotnet build MyFunctionApp/MyFunctionApp.csproj --configuration Release --no-restore
+
+      - name: Publish
+        run: dotnet publish MyFunctionApp/MyFunctionApp.csproj --configuration Release --no-build --output ./publish-func
+
+      - name: Deploy to Azure Functions
+        uses: Azure/functions-action@v1
+        with:
+          app-name: my-function-app-learning
+          package: ./publish-func
+          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}

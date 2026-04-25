@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'MyApi/**'
+      - 'MyFunctionApp/**'
+      - '.github/workflows/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'MyApi/**'
+      - 'MyFunctionApp/**'
+      - '.github/workflows/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore API
+        run: dotnet restore MyApi/MyApi.csproj
+
+      - name: Build API
+        run: dotnet build MyApi/MyApi.csproj --configuration Release --no-restore
+
+      - name: Restore Functions
+        run: dotnet restore MyFunctionApp/MyFunctionApp.csproj
+
+      - name: Build Functions
+        run: dotnet build MyFunctionApp/MyFunctionApp.csproj --configuration Release --no-restore

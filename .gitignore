@@ -41,6 +41,7 @@ _ReSharper*/
 # Publish artifacts
 **/publish/
 *.publishsettings
+*.PublishSettings
 *.pubxml
 
 # Test artifacts
