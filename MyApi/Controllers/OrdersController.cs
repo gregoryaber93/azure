@@ -1,4 +1,4 @@
-using Azure.Storage.Queues;
+﻿using Azure.Storage.Queues;
 using Microsoft.AspNetCore.Mvc;
 using MyApi.DTOs;
 using MyApi.Entities;
@@ -23,6 +23,7 @@ namespace MyApi.Controllers
             _configuration = configuration;
             _logger = logger;
             var connectionString = _configuration["Storage:ConnectionString"];
+            _logger.LogError("LOG STREAM TEST 🔥🔥🔥");
 
             _queueClient = new QueueClient(
                     connectionString,
@@ -37,6 +38,8 @@ namespace MyApi.Controllers
         public async Task<IActionResult> GetAll([FromQuery] string? productName)
         {
             _logger.LogInformation("CI/CD TEST API");
+
+            _logger.LogError("LOG STREAM TEST 🔥🔥🔥ADSASASDASDASDASDASDASDS");
 
             var orders = await _orderService.GetAll();
 
