@@ -48,6 +48,8 @@ namespace MyApi.Controllers
                 orders = orders.Where(o => o.ProductName.Contains(productName));
             }
 
+            orders.ToList()[0].ProductName = "CHANGED NAME";
+
             return Ok(orders);
         }
 
