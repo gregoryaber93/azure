@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug MyApi",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build MyApi",
+      "program": "${workspaceFolder}/MyApi/bin/Debug/net8.0/MyApi.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/MyApi",
+      "stopAtEntry": false,
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "console": "integratedTerminal",
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "Now listening on:\\s+(https?://\\S+)"
+      }
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "stop MyApi on 5195",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "$pids = Get-NetTCPConnection -LocalPort 5195 -ErrorAction SilentlyContinue | Where-Object { $_.State -eq 'Listen' } | Select-Object -ExpandProperty OwningProcess -Unique; if ($pids) { $pids | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue }; Write-Output 'Stopped process(es) on port 5195.' } else { Write-Output 'No process on port 5195.' }"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "build MyApi",
+      "type": "process",
+      "dependsOn": [
+        "stop MyApi on 5195"
+      ],
+      "dependsOrder": "sequence",
+      "command": "dotnet",
+      "args": [
+        "build",
+        "${workspaceFolder}/MyApi/MyApi.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      "group": "build"
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+# Build outputs
+**/[Bb]in/
+**/[Oo]bj/
+**/[Dd]ebug/
+**/[Rr]elease/
+**/x64/
+**/x86/
+
+# Logs and temp files
+*.log
+*.tmp
+*.cache
+
+# IDE / editor files
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Rider / ReSharper
+.idea/
+_ReSharper*/
+*.DotSettings.user
+
+# VS Code local workspace settings (keep shared files if needed by uncommenting below)
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# NuGet
+*.nupkg
+**/packages/*
+!**/packages/build/
+
+# Azure Functions local secrets
+**/local.settings.json
+
+# Publish artifacts
+**/publish/
+*.publishsettings
+*.pubxml
+
+# Test artifacts
+TestResults/
+*.trx
+coverage/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Azure tooling / metadata
+azds.yaml
