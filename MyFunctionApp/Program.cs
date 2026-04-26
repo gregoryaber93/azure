@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MyFunctionApp.Data;
+using Microsoft.Azure.Cosmos;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults()
@@ -19,6 +20,12 @@ var host = new HostBuilder()
         {
             telemetryConfig.ConnectionString =
                 config["APPLICATIONINSIGHTS_CONNECTION_STRING"];
+        });
+
+        services.AddSingleton(s =>
+        {
+            var connectionString = config["CosmosDbConnection"];
+            return new CosmosClient(connectionString);
         });
 
         // DB

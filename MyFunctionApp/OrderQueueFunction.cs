@@ -1,4 +1,5 @@
 using Azure.Storage.Queues.Models;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using MyFunctionApp.Data;
@@ -17,11 +18,13 @@ namespace MyFunctionApp
     {
         private readonly ILogger _logger;
         private readonly AppDbContext _context;
+        private readonly CosmosClient _cosmosClient;
 
-        public OrderQueueFunction(ILoggerFactory loggerFactory, AppDbContext context)
+        public OrderQueueFunction(ILoggerFactory loggerFactory, AppDbContext context, CosmosClient cosmosClient)
         {
             _logger = loggerFactory.CreateLogger<OrderQueueFunction>();
             _context = context;
+            _cosmosClient = cosmosClient;
         }
 
         // Storage:ConnectionString
@@ -177,25 +180,59 @@ namespace MyFunctionApp
             orderDb.Status = "Processed1";
             _context.SaveChanges();
             _logger.LogInformation($"Processing order: {message}");
-        }
 
-        [Function("AnalyticsOrderTopic")]
-        public async Task RunAnalyticsOrderTopic([ServiceBusTrigger(
-        "orders-topic",
-        "order-analytics",
-        Connection = "ServiceBus:ConnectionString")] string message)
-        {
-            var orderDb = _context.Orders.LastOrDefault(x => x.Status == "Pending");
-            if (orderDb == null)
+
+            var container = _cosmosClient
+                .GetContainer("orders-db", "orders-events");
+
+            var orderEvent = new OrderEvent
             {
-                _logger.LogError($"No pending orders found in database.");
-                return;
-            }
+                orderId = Guid.NewGuid().ToString(), // później weźmiemy z message
+                type = "order-processing"
+            };
 
-            orderDb.Status = "Processed2";
-            _context.SaveChanges();
-            _logger.LogInformation($"Analytics received: {message}");
+            await container.CreateItemAsync(
+                orderEvent,
+                new PartitionKey(orderEvent.orderId)
+            );
         }
+
+        //[Function("AnalyticsOrderTopic")]
+        //public async Task RunAnalyticsOrderTopic([ServiceBusTrigger(
+        //"orders-topic",
+        //"order-analytics",
+        //Connection = "ServiceBus:ConnectionString")] string message)
+        //{
+        //    var orderDb = _context.Orders.LastOrDefault(x => x.Status == "Pending");
+        //    if (orderDb == null)
+        //    {
+        //        _logger.LogError($"No pending orders found in database.");
+        //        return;
+        //    }
+
+        //    orderDb.Status = "Processed2";
+        //    _context.SaveChanges();
+        //    _logger.LogInformation($"Analytics received: {message}");
+        //}
+
+        //[Function("ProcessOrderWithCosmos")]
+        //public async Task RunWithCosmos([ServiceBusTrigger("orders-topic", "order-processing", Connection = "ServiceBusConnection")]string message)
+        //{
+        //    var container = _cosmosClient
+        //        .GetContainer("orders-db", "orders-events");
+
+        //    var orderEvent = new OrderEvent
+        //    {
+        //        orderId = Guid.NewGuid().ToString(), // później weźmiemy z message
+        //        type = "order-processing"
+        //    };
+
+        //    await container.CreateItemAsync(
+        //        orderEvent,
+        //        new PartitionKey(orderEvent.orderId)
+        //    );
+        //}
+
 
         private static OrderMessage? TryDeserializeOrder(string message)
         {
