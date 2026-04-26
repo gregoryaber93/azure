@@ -167,6 +167,15 @@ namespace MyFunctionApp
         "order-processing",
         Connection = "ServiceBus:ConnectionString")] string message)
         {
+            var orderDb = _context.Orders.FirstOrDefault(x => x.Status == "Pending");
+            if (orderDb == null)
+            {
+                _logger.LogError($"No pending orders found in database.");
+                return;
+            }
+
+            orderDb.Status = "Processed1";
+            _context.SaveChanges();
             _logger.LogInformation($"Processing order: {message}");
         }
 
@@ -176,6 +185,15 @@ namespace MyFunctionApp
         "order-analytics",
         Connection = "ServiceBus:ConnectionString")] string message)
         {
+            var orderDb = _context.Orders.FirstOrDefault(x => x.Status == "Pending");
+            if (orderDb == null)
+            {
+                _logger.LogError($"No pending orders found in database.");
+                return;
+            }
+
+            orderDb.Status = "Processed2";
+            _context.SaveChanges();
             _logger.LogInformation($"Analytics received: {message}");
         }
 
