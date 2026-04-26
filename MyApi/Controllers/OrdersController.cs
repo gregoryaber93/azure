@@ -6,6 +6,7 @@ using MyApi.Services;
 using System.Diagnostics;
 using System.Text.Json;
 using Azure.Messaging.ServiceBus;
+using Azure.Identity;
 
 namespace MyApi.Controllers
 {
@@ -115,7 +116,12 @@ namespace MyApi.Controllers
         {
             var connectionString = _configuration["ServiceBus:ConnectionString"];
 
-            await using var client = new ServiceBusClient(connectionString);
+            // await using var client = new ServiceBusClient(connectionString);
+
+            var client = new ServiceBusClient(
+                "sb-learning.servicebus.windows.net",
+                new DefaultAzureCredential());
+
             var sender = client.CreateSender("orders-sb");
 
             var operationId = Activity.Current?.Id;
