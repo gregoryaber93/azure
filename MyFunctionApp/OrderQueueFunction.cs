@@ -165,7 +165,7 @@ namespace MyFunctionApp
         public async Task RunProcessOrderTopic([ServiceBusTrigger(
         "orders-topic",
         "order-processing",
-        Connection = "ServiceBus__ConnectionString")] string message)
+        Connection = "ServiceBus:ConnectionString")] string message)
         {
             _logger.LogInformation($"Processing order: {message}");
         }
@@ -174,7 +174,7 @@ namespace MyFunctionApp
         public async Task RunAnalyticsOrderTopic([ServiceBusTrigger(
         "orders-topic",
         "order-analytics",
-        Connection = "ServiceBus__ConnectionString")] string message)
+        Connection = "ServiceBus:ConnectionString")] string message)
         {
             _logger.LogInformation($"Analytics received: {message}");
         }
