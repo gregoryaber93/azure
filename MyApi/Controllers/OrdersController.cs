@@ -136,8 +136,11 @@ namespace MyApi.Controllers
 
             var json = JsonSerializer.Serialize(message);
 
-            await sender.SendMessageAsync(new ServiceBusMessage(json));
+            var messageUpgrated = new ServiceBusMessage(json);
 
+            messageUpgrated.ApplicationProperties["type"] = "order-created";
+
+            await sender.SendMessageAsync(messageUpgrated);
             _logger.LogInformation("Message sent to Service Bus");
             return Ok(operationId);
         }

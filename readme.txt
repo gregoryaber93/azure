@@ -21,6 +21,18 @@ https://webapp-learning-1.azurewebsites.net/api/test/post
 func azure functionapp publish func-learning-grzegorz123
 
 
+===========================================================================================================
+
+docker build -t webapi-learning:3.0 .
+docker tag webapi-learning:3.0 acrlearninggrzegorz123.azurecr.io/webapi-learning:3.0
+docker push acrlearninggrzegorz123.azurecr.io/webapi-learning:3.0
+
+az containerapp update `
+  --name ca-webapi-learning `
+  --resource-group rg-learning-dev `
+  --image acrlearninggrzegorz123.azurecr.io/webapi-learning:3.0
+
+================================================================================================================
 
 
 Ostatnie wykonania funkcji Test (czy w ogóle się odpala)
