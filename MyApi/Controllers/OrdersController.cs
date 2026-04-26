@@ -119,7 +119,7 @@ namespace MyApi.Controllers
             // await using var client = new ServiceBusClient(connectionString);
 
             var client = new ServiceBusClient(
-                "sb-learning.servicebus.windows.net",
+                "sb-learning-standard.servicebus.windows.net",
                 new DefaultAzureCredential());
 
             var sender = client.CreateSender("orders-sb");
