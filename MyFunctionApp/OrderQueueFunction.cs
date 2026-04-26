@@ -185,7 +185,7 @@ namespace MyFunctionApp
         "order-analytics",
         Connection = "ServiceBus:ConnectionString")] string message)
         {
-            var orderDb = _context.Orders.FirstOrDefault(x => x.Status == "Pending");
+            var orderDb = _context.Orders.LastOrDefault(x => x.Status == "Pending");
             if (orderDb == null)
             {
                 _logger.LogError($"No pending orders found in database.");

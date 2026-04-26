@@ -115,34 +115,46 @@ namespace MyApi.Controllers
         public async Task<IActionResult> TestBus()
         {
             var connectionString = _configuration["ServiceBus:ConnectionString"];
-
-            // await using var client = new ServiceBusClient(connectionString);
-
-            var client = new ServiceBusClient(
-                "sb-learning-standard.servicebus.windows.net",
-                new DefaultAzureCredential());
-
-            var sender = client.CreateSender("orders-topic");
+            var topicName = _configuration["ServiceBus:TopicName"] ?? "orders-topic";
+            var namespaceName = _configuration["ServiceBus:Namespace"] ?? "sb-learning-standard.servicebus.windows.net";
 
             var operationId = Activity.Current?.Id;
 
             var firstOrder = (await _orderService.GetAll()).FirstOrDefault();
 
+            if (firstOrder == null)
+            {
+                return NotFound("No orders found to publish.");
+            }
+
             var message = new
             {
-                OrderId = firstOrder?.Id,
+                OrderId = firstOrder.Id,
                 OperationId = operationId
             };
 
             var json = JsonSerializer.Serialize(message);
 
-            var messageUpgrated = new ServiceBusMessage(json);
+            try
+            {
+                await using var client = !string.IsNullOrWhiteSpace(connectionString)
+                    ? new ServiceBusClient(connectionString)
+                    : new ServiceBusClient(namespaceName, new DefaultAzureCredential());
 
-            messageUpgrated.ApplicationProperties["type"] = "order-created";
+                var sender = client.CreateSender(topicName);
+                var messageUpgrated = new ServiceBusMessage(json);
 
-            await sender.SendMessageAsync(messageUpgrated);
-            _logger.LogInformation("Message sent to Service Bus");
-            return Ok(operationId);
+                messageUpgrated.ApplicationProperties["type"] = "order-created";
+
+                await sender.SendMessageAsync(messageUpgrated);
+                _logger.LogInformation("Message sent to Service Bus topic {TopicName}", topicName);
+                return Ok(operationId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to send message to Service Bus topic {TopicName}", topicName);
+                return StatusCode(500, "Failed to publish message to Service Bus. Check ServiceBus configuration and identity permissions.");
+            }
         }
     }
 }
