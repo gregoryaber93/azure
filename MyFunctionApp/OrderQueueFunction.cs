@@ -153,19 +153,19 @@ namespace MyFunctionApp
             _logger.LogInformation("Order {OrderId} processed.", messageObject.OrderId.Value);
         }
 
-        [Function("ProcessOrderSB")]
-        public void RunSb(
-            [ServiceBusTrigger("orders-sb", Connection = "ServiceBus:ConnectionString")] string message)
-        {
-            _logger.LogWarning($"SB MESSAGE: {message}");
-            //throw new Exception("BOOM 💣");
-        }
+        //[Function("ProcessOrderSB")]
+        //public void RunSb(
+        //    [ServiceBusTrigger("orders-sb", Connection = "ServiceBus:ConnectionString")] string message)
+        //{
+        //    _logger.LogWarning($"SB MESSAGE: {message}");
+        //    //throw new Exception("BOOM 💣");
+        //}
 
         [Function("ProcessOrderTopic")]
         public async Task RunProcessOrderTopic([ServiceBusTrigger(
         "orders-topic",
         "order-processing",
-        Connection = "ServiceBus:ConnectionString")] string message)
+        Connection = "ServiceBus__ConnectionString")] string message)
         {
             _logger.LogInformation($"Processing order: {message}");
         }
@@ -174,7 +174,7 @@ namespace MyFunctionApp
         public async Task RunAnalyticsOrderTopic([ServiceBusTrigger(
         "orders-topic",
         "order-analytics",
-        Connection = "ServiceBus:ConnectionString")] string message)
+        Connection = "ServiceBus__ConnectionString")] string message)
         {
             _logger.LogInformation($"Analytics received: {message}");
         }
