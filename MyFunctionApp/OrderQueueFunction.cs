@@ -165,7 +165,7 @@ namespace MyFunctionApp
         public async Task RunProcessOrderTopic([ServiceBusTrigger(
         "orders-topic",
         "order-processing",
-        Connection = "ServiceBus__ConnectionString")] string message)
+        Connection = "ServiceBus:ConnectionString")] string message)
         {
             var orderDb = _context.Orders.FirstOrDefault(x => x.Status == "Pending");
             if (orderDb == null)
@@ -183,7 +183,7 @@ namespace MyFunctionApp
         public async Task RunAnalyticsOrderTopic([ServiceBusTrigger(
         "orders-topic",
         "order-analytics",
-        Connection = "ServiceBus__ConnectionString")] string message)
+        Connection = "ServiceBus:ConnectionString")] string message)
         {
             var orderDb = _context.Orders.FirstOrDefault(x => x.Status == "Pending");
             if (orderDb == null)

@@ -122,7 +122,7 @@ namespace MyApi.Controllers
                 "sb-learning-standard.servicebus.windows.net",
                 new DefaultAzureCredential());
 
-            var sender = client.CreateSender("orders-sb");
+            var sender = client.CreateSender("orders-topic");
 
             var operationId = Activity.Current?.Id;
 
