@@ -1,12 +1,13 @@
-﻿using Azure.Storage.Queues;
+﻿using Azure.Identity;
+using Azure.Messaging.ServiceBus;
+using Azure.Storage.Queues;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Cosmos;
 using MyApi.DTOs;
 using MyApi.Entities;
 using MyApi.Services;
 using System.Diagnostics;
 using System.Text.Json;
-using Azure.Messaging.ServiceBus;
-using Azure.Identity;
 
 namespace MyApi.Controllers
 {
@@ -18,11 +19,13 @@ namespace MyApi.Controllers
         private readonly QueueClient _queueClient;
         private readonly IConfiguration _configuration;
         private readonly ILogger<OrdersController> _logger;
-        public OrdersController(IOrderService orderService, IConfiguration configuration, ILogger<OrdersController> logger)
+        private readonly CosmosClient _cosmosClient;
+        public OrdersController(IOrderService orderService, IConfiguration configuration, ILogger<OrdersController> logger, CosmosClient cosmosClient)
         {
             _orderService = orderService;
             _configuration = configuration;
             _logger = logger;
+            _cosmosClient = cosmosClient;
             var connectionString = _configuration["Storage:ConnectionString"];
             _logger.LogError("LOG STREAM TEST 🔥🔥🔥");
 
@@ -73,6 +76,33 @@ namespace MyApi.Controllers
             return Ok(dto);
         }
 
+        [HttpGet("events/{orderId}")]
+        public async Task<IActionResult> Get(string orderId)
+        {
+            var container = _cosmosClient
+                .GetContainer("orders-db", "orders-events");
+
+            var query = new QueryDefinition(
+                "SELECT * FROM c WHERE c.orderId = @orderId")
+                .WithParameter("@orderId", orderId);
+
+            var iterator = container.GetItemQueryIterator<OrderEvent>(
+                query,
+                requestOptions: new QueryRequestOptions
+                {
+                    PartitionKey = new PartitionKey(orderId)
+                });
+
+            var results = new List<OrderEvent>();
+
+            while (iterator.HasMoreResults)
+            {
+                var response = await iterator.ReadNextAsync();
+                results.AddRange(response);
+            }
+
+            return Ok(results);
+        }
 
         [HttpPost]
         public async Task<IActionResult> Create(CreateOrderDto dto)

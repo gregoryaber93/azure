@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using MyApi.Data;
 using MyApi.Repositories;
 using MyApi.Services;
+using Microsoft.Azure.Cosmos;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,12 @@ builder.Services.AddSwaggerGen();
 
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
+
+builder.Services.AddSingleton(s =>
+{
+    var connectionString = builder.Configuration["CosmosDbConnection"];
+    return new CosmosClient(connectionString);
+});
 
 builder.Services.Configure<MyApi.Config.AzureFunctionsOptions>(builder.Configuration.GetSection("AzureFunctions"));
 
